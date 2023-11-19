@@ -1,0 +1,70 @@
+﻿@model IEnumerable<DeweyDecimal.Models.Book>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div id="sortable-list" class="list-group list-group-horizontal justify-content-center">
+    @foreach (var item in Model)
+    {
+        <div 
+            class="list-group-item border-0 bg-transparent p-0 book-item"
+            data-id="@item.Id"
+            data-call-number="@item.CallNumber"
+            data-author="@item.Author"
+        >
+            <div class="image-container">
+                <img src="~/images/book.png" />
+                <div class="text-overlay">
+                    <p>@item.Author</p>
+                    <p>@item.CallNumber</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@section scripts {
+    <script>
+        $(function () {
+            $("#sortable-list").sortable({
+                tolerance: 'pointer',
+                axis: 'x',
+                stop: function (event, ui) {
+                    var booksArray = [];
+
+                    $('.book-item').each(function () {
+                        var callNumberData = $(this).data('call-number');
+
+                        // Replace comma with period if a comma is present
+                        if (callNumberData.includes(',')) {
+                            callNumberData = callNumberData.replace(',', '.');
+                        }
+
+                        var bookData = {
+                            Id: parseInt($(this).data('id')),
+                            Author: $(this).data('author'),
+                            CallNumber: parseFloat(callNumberData)
+                        };
+                        booksArray.push(bookData);
+                    });
+
+                    var jsonData = JSON.stringify(booksArray);
+                    console.log(jsonData)
+
+                    $.ajax({
+                        url: '/ReplacingBooks/CheckOrder',
+                        type: 'POST',
+                        contentType: 'application/json', // Set the content type to JSON.
+                        data: jsonData, // Serialize the form data as JSON.
+                        success: function (data, status) {
+                            console.log(data);
+                            // Check data and refresh the page as needed.
+                        }
+                    });
+                }
+            });
+
+            $("#sortable-list").disableSelection();
+        });
+    </script>
+}

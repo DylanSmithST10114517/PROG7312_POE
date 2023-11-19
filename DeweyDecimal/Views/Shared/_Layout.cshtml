@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DeweyDecimal</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/DeweyDecimal.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" href="/Home/Index">DeweyDecimal</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/Home/Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/Home/Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="#" id="openDifficultyModal">Replacing Books</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="#" id="openIdentifyingAreasModal">Identifying Areas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark disabled" href="#" tabindex="-1" aria-disabled="true">Finding Call Numbers</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2023 - DeweyDecimal - <a href="/Home/Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="difficultyModal" tabindex="-1" role="dialog" aria-labelledby="difficultyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="difficultyModalLabel">Select Difficulty</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Please select the difficulty level:</p>
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="/ReplacingBooks/Easy">Easy</a></li>
+                        <li class="list-group-item"><a href="/ReplacingBooks/Medium">Medium</a></li>
+                        <li class="list-group-item"><a href="/ReplacingBooks/Hard">Hard</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="identifyingAreaModal" tabindex="-1" role="dialog" aria-labelledby="identifyingAreaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="identifyingAreaModalLabel">Select Game Mode</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Please select the game mode:</p>
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="/IdentifyingAreas/CatToCall">Category to Call Number</a></li>
+                        <li class="list-group-item"><a href="/IdentifyingAreas/CallToCat">Call Number to Category</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#openDifficultyModal').click(function () {
+                $('#difficultyModal').modal('show');
+            });
+            $('.close ').click(function() {
+                $('#difficultyModal').modal('hide');
+            });
+            $('#openIdentifyingAreasModal').click(function () {
+                $('#identifyingAreaModal').modal('show');
+            });
+            $('.close ').click(function() {
+                $('#identifyingAreaModal').modal('hide');
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

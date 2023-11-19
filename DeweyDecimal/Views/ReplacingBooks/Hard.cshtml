@@ -1,0 +1,108 @@
+﻿@model IEnumerable<DeweyDecimal.Models.Book>
+
+@{
+    ViewData["Title"] = "HardMode";
+}
+
+<p id="countdowntimer"></p>
+
+<div id="sortable-list" class="list-group list-group-horizontal justify-content-center">
+    @foreach (var item in Model)
+    {
+        <div 
+            class="list-group-item border-0 bg-transparent p-0 book-item"
+            data-id="@item.Id"
+            data-call-number="@item.CallNumber"
+            data-author="@item.Author"
+        >
+            <div class="image-container">
+                <img src="~/images/book.png" />
+                <div class="text-overlay">
+                    <p>@item.Author</p>
+                    <p>@item.CallNumber</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        var complete = false;
+
+        // Set the date we're counting down to
+        var countDownDate = new Date().getTime()+27000;
+
+        // Update the count down every 1 second
+        var x = setInterval(function() {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for seconds
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            document.getElementById("countdowntimer").innerHTML = seconds + " seconds";
+
+            // If the count down is finished, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("countdowntimer").innerHTML = "0 seconds";
+                if (!complete) {
+                    alert("Out of time!!!")
+                    location.reload();
+                }
+            }
+        }, 1000);
+
+        $(function () {
+            $("#sortable-list").sortable({
+                tolerance: 'pointer',
+                axis: 'x',
+                stop: function (event, ui) {
+                    var booksArray = [];
+
+                    $('.book-item').each(function () {
+                        var callNumberData = $(this).data('call-number');
+
+                        if (callNumberData.includes(',')) {
+                            callNumberData = callNumberData.replace(',', '.');
+                        }
+
+                        var bookData = {
+                            Id: parseInt($(this).data('id')),
+                            Author: $(this).data('author'),
+                            CallNumber: parseFloat(callNumberData)
+                        };
+                        booksArray.push(bookData);
+                    });
+
+                    var jsonData = JSON.stringify(booksArray);
+
+                    if (booksArray.length > 0) {
+                        
+                        $.ajax({
+                            url: '/ReplacingBooks/CheckOrder',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: jsonData,
+                            success: function (data, status) {
+                                if (data) {
+                                    complete = true;
+                                    alert("You got it!!!\nTime left: " + document.getElementById("countdowntimer").innerHTML);
+                                    location.reload();
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+            $("#sortable-list").disableSelection();
+        });
+    </script>
+}
