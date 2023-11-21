@@ -48,28 +48,29 @@ namespace DeweyDecimal.Controllers
         }
 
         [HttpPost]
-        public ActionResult<bool> CheckIfCorrect([FromBody] Dictionary<string, string> quiz)
+        public ActionResult<Dictionary<string, bool>> CheckIfCorrect([FromBody] Dictionary<string, string> quiz)
         {
-            List<string> questions = new(quiz.Keys);
-            foreach (string question in questions)
-            {
-                if (CallNumberCategory.Keys.Contains(question))
-                {
-                    if (quiz[question] != CallNumberCategory[question])
-                    {
-                        return Ok (false);
-                    }
+            Dictionary<string, bool> correctness = new Dictionary<string, bool>();
 
+            foreach (var (question, answer) in quiz)
+            {
+                if (CallNumberCategory.ContainsKey(question) && CallNumberCategory[question] == answer)
+                {
+                    correctness[question] = true;
+                }
+                else if (CategoryCallNumber.ContainsKey(question) && CategoryCallNumber[question] == answer)
+                {
+                    correctness[question] = true;
                 }
                 else
                 {
-                    if (quiz[question] != CategoryCallNumber[question])
-                    {
-                        return Ok(false);
-                    }
+                    correctness[question] = false;
                 }
             }
-            return Ok(true);
+
+            return Ok(correctness);
         }
+
+
     }
 }

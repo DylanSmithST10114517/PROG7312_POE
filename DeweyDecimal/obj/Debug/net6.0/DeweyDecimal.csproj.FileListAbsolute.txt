@@ -24,3 +24,4 @@ C:\Users\dylsm\source\repos\DeweyDecimal\DeweyDecimal\obj\Debug\net6.0\refint\De
 C:\Users\dylsm\source\repos\DeweyDecimal\DeweyDecimal\obj\Debug\net6.0\DeweyDecimal.pdb
 C:\Users\dylsm\source\repos\DeweyDecimal\DeweyDecimal\obj\Debug\net6.0\DeweyDecimal.genruntimeconfig.cache
 C:\Users\dylsm\source\repos\DeweyDecimal\DeweyDecimal\obj\Debug\net6.0\ref\DeweyDecimal.dll
+C:\Users\dylsm\source\repos\DeweyDecimal\DeweyDecimal\bin\Debug\net6.0\Data\categories.json

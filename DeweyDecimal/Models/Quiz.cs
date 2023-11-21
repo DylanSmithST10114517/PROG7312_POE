@@ -2,7 +2,8 @@
 {
     public class Quiz
     {
-        public readonly Dictionary<string, string> CallNumberCategory = new(){
+        public readonly Dictionary<string, string> CallNumberCategory = new()
+        {
             {"000-099", "General Works"},
             {"100-199", "Philosophy and Psychology"},
             {"200-299", "Religion"},
@@ -14,8 +15,9 @@
             {"800-899", "Literature and Rhetoric"},
             {"900-999", "History, Biography, and Geography"},
         };
-        public readonly Dictionary<string, string> CategoryCallNumber = new(){
-            {"General Works","000-099"},
+        public readonly Dictionary<string, string> CategoryCallNumber = new()
+        {
+            {"General Works", "000-099"},
             {"Philosophy and Psychology", "100-199"},
             {"Religion", "200-299"},
             {"Social Sciences", "300-399"},
@@ -32,56 +34,37 @@
 
         public Quiz(bool callToCat)
         {
-            List<string> keyList;
-            List<string> answerList;
-            Dictionary<string, string> answerDict;
-            if (callToCat)
-            {
-                answerDict = CallNumberCategory;
-                keyList = new List<string>(answerDict.Keys);
-                answerList = new List<string>(answerDict.Values);
-            }
-            else
-            {
-                answerDict = CategoryCallNumber;
-                keyList = new List<string>(answerDict.Keys);
-                answerList = new List<string>(answerDict.Values);
-            }
+            Dictionary<string, string> answerDict = callToCat ? CallNumberCategory : CategoryCallNumber;
+            List<string> keyList = new List<string>(answerDict.Keys);
+            List<string> answerList = new List<string>(answerDict.Values);
 
             Random rand = new Random();
 
             // Ensure distinct questions
-            HashSet<string> distinctQuestions = new HashSet<string>();
-            while (distinctQuestions.Count < 4)
+            while (Questions.Count < 4)
             {
                 string question = keyList[rand.Next(keyList.Count)];
-                distinctQuestions.Add(question);
-            }
-
-            // Add distinct questions to Questions list
-            Questions.AddRange(distinctQuestions);
-
-            // Add corresponding answers to Answers list
-            foreach (string question in distinctQuestions)
-            {
-                Answers.Add(answerDict[question]);
+                if (!Questions.Contains(question))
+                {
+                    Questions.Add(question);
+                    // Add corresponding answers to Answers list
+                    Answers.Add(answerDict[question]);
+                }
             }
 
             // Ensure distinct answers
-            HashSet<string> distinctAnswers = new HashSet<string>();
-            while (distinctAnswers.Count < 3)
+            while (Answers.Count < 7)
             {
                 string answer = answerList[rand.Next(answerList.Count)];
-                distinctAnswers.Add(answer);
+                if (!Answers.Contains(answer))
+                {
+                    Answers.Add(answer);
+                }
             }
-
-            // Add distinct answers to Answers list
-            Answers.AddRange(distinctAnswers);
 
             ShuffleQuestions();
             ShuffleAnswers();
         }
-
 
         public Quiz()
         {

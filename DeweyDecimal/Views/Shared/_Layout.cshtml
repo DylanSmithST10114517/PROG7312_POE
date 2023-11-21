@@ -26,13 +26,15 @@
                             <a class="nav-link text-dark" href="/Home/Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
+
+                        <li class="nav-item">
                             <a class="nav-link text-dark" href="#" id="openDifficultyModal">Replacing Books</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="#" id="openIdentifyingAreasModal">Identifying Areas</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark disabled" href="#" tabindex="-1" aria-disabled="true">Finding Call Numbers</a>
+                            <a class="nav-link text-dark" href="/FindingCallNumbers" id="" >Finding Call Numbers</a>
                         </li>
                     </ul>
                 </div>
@@ -111,6 +113,10 @@
             $('.close ').click(function() {
                 $('#identifyingAreaModal').modal('hide');
             });
+       $('#openFindingCallNum').click(function () {
+            // Adjust the URL based on your controller and action
+            window.location.href = '/FindingCallNumbers';
+        });
         });
     </script>
 

@@ -41,9 +41,18 @@ Identifying Areas Game:
 Once on homepage you can click on the "Identifying Areas" link, this will give the option to choose either "Call Number to Category" or "Category to Call Number" game modes.
 
 
-Once a game mode is selected the page opens, a timer is started once clicks and starts dragging the questions or answers. The user will have to drag questions or answers
-into the correct positions order to win the game. Once completed the time taken will be shown and the user can choose to play again
+Once a game mode is selected the page opens, a timer is started once you move a question or answer. The user will have to drag questions or answers
+into the correct positions order to win the game. Once completed the user must press "Complete", the time and number of right or wrong answers will be shown and the user can choose to play again.
 
-*NB* Please ensure nothing is blocking Pop-Ups on the webpage as this could cause an error when displaying when you completed a game.
-(This was from feedback in Part 1)
-I struggled with the implentation of the timer and alert. I added console.logs to check that matching is correct
+
+***********************************************************************************************************************
+Finding Call Numbers Game:
+***********************************************************************************************************************
+
+Once on homepage you can click on the "Identifying Areas" link, this will give the option to choose either "Call Number to Category" or "Category to Call Number" game modes.
+
+
+Once a game mode is selected the page opens, a timer is started once you move a question or answer. The user will have to drag questions or answers
+into the correct positions order to win the game. Once completed the user must press "Complete", the time and number of right or wrong answers will be shown and the user can choose to play again
+
+*NB* Please ensure nothing is blocking Pop-Ups on the webpage as this could cause an error when displaying when you completed a game. e.g(Local Host:0000 says: "Out of time!")

@@ -8,20 +8,24 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="completePopupLabel">Complete!</h5>
+                    <h5 class="modal-title" id="completePopupLabel">Results</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    Congratulations! You've completed the matching.
+                <div class="modal-body" id="resultsBody">
+                    <!-- Results will be displayed here -->
+                    <p id="timeTaken"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="resetLists()">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="resetGame()">Play Again</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Timer Display -->
+    <div id="timer" style="position: absolute; top: 10px; right: 10px; font-size: 18px;"></div>
 
     <div class="row mt-4">
         <div class="col-md-6">
@@ -30,8 +34,7 @@
                 @for (int i = 0; i < Model.Questions.Count; i++)
                 {
                     <div class="card mb-3 list-group-item quiz-question-item"
-                    data-item="@Model.Questions[i]"
-                    >
+                         data-item="@Model.Questions[i]">
                         <div class="card-body">
                             @Model.Questions[i]
                         </div>
@@ -46,9 +49,7 @@
                 @for (int i = 0; i < Model.Answers.Count; i++)
                 {
                     <div class="card mb-3 list-group-item quiz-answer-item"
-                        data-item="@Model.Answers[i]"
-                    >
-                        
+                         data-item="@Model.Answers[i]">
                         <div class="card-body">
                             @Model.Answers[i]
                         </div>
@@ -57,61 +58,143 @@
             </div>
         </div>
     </div>
-</div>
 
-@section scripts {
-    <script>
-        var expectedAnswers = @Html.Raw(Json.Serialize(Model.Answers)); // Initialize the JavaScript variable with data from the C# model
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="text-right">
+                <button type="button" class="btn btn-primary mt-4" onclick="completeMatching()">Complete</button>
+            </div>
+        </div>
+    </div>
 
-        $(function () {
-            $("#sortable-list-questions, #sortable-list-answers").sortable({
-                connectWith: ".list-group",
-                tolerance: 'pointer',
-                axis: 'y',
-                stop: function (event, ui) {
-                    var answers = []
-                    var questions = []
-                    
-                     $('.quiz-answer-item').each(function () {
-                        var answer = $(this).data('item');
+    @section scripts {
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-                        
-                        answers.push(answer);
-                    });
+        <script>
+            var expectedAnswers = @Html.Raw(Json.Serialize(Model.Answers));
+            var questions = [];
+            var elementsMoved = false;
+            var startTime;
 
-                     $('.quiz-question-item').each(function () {
-                        var question = $(this).data('item');
+            function resetGame() {
+                questions = [];
+                elementsMoved = false;
+                startTime = undefined;
 
-                        
-                        questions.push(question);
-                    });
+                $('.quiz-question-item, .quiz-answer-item').removeClass('bg-success bg-danger');
+                $("#sortable-list-questions, #sortable-list-answers").sortable('enable');
 
-                    var quizDict = {}
-                    questions.forEach((question, index) => {
-                        quizDict[question]=answers[index]
-                    });
-                    var jsonData=JSON.stringify(quizDict);
+                closeModal(); // Close the popup
+                location.reload(); // Reload the page
+            }
 
-                      $.ajax({
-                            url: '/IdentifyingAreas/CheckIfCorrect',
-                            type: 'POST',
-                            contentType: 'application/json',
-                            data: jsonData,
-                            success: function (data, status) {
-                                if (data) {
-                                    console.log("Correct")
-                                    console.log(quizDict)
-                                    console.log(answers)
-                                    console.log(questions)
-                                }
-                                else {
-                                    console.log("Incorrect")
-                                }
-                            }
-                        });
+            function closeModal() {
+                // Add any additional logic you may need before closing the modal
+                $('#completePopup').modal('hide');
+            }
+
+            function startTimer() {
+                startTime = new Date();
+                updateTimer();
+            }
+
+            function stopTimer() {
+                return new Date() - startTime;
+            }
+
+            function updateTimer() {
+                if (startTime) {
+                    var elapsedTime = new Date() - startTime;
+                    var seconds = Math.floor(elapsedTime / 1000);
+                    $('#timer').text('Time: ' + seconds + ' seconds');
+                    setTimeout(updateTimer, 1000);
                 }
-            }).disableSelection();
-        });
+            }
 
-    </script>
-}
+            $(function () {
+                $("#sortable-list-questions, #sortable-list-answers").sortable({
+                    connectWith: ".list-group",
+                    tolerance: 'intersect',
+                    axis: 'y',
+                    start: function (event, ui) {
+                        startTimer();
+                    },
+                    stop: function (event, ui) {
+                        elementsMoved = true;
+
+                        if ($(ui.item).parent().attr('id') !== "sortable-list-questions") {
+                            $(ui.sender).sortable('cancel');
+                        } else {
+                            questions = [];
+                            $('.quiz-question-item').each(function () {
+                                var question = $(this).data('item');
+                                questions.push(question);
+                            });
+                        }
+                    }
+                }).disableSelection();
+            });
+
+            function completeMatching() {
+                if (!elementsMoved) {
+                    // Elements haven't been moved, do not proceed
+                    alert("Please move at least one element before completing.");
+                    return;
+                }
+
+                var answers = [];
+
+                $('.quiz-answer-item').each(function () {
+                    var answer = $(this).data('item');
+                    answers.push(answer);
+                });
+
+                var elapsedTime = stopTimer();
+
+                $.ajax({
+                    url: '/IdentifyingAreas/CheckIfCorrect',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(Object.fromEntries(questions.map((question, index) => [question, answers[index]]))),
+                    success: function (response) {
+                        setTimeout(function () {
+                            handleCorrectness(response, elapsedTime);
+                        }, 2000); // 2 seconds delay
+                    },
+                    error: function (error) {
+                        console.log("Error:", error);
+                    }
+                });
+            }
+
+            function handleCorrectness(correctness, elapsedTime) {
+                console.log(correctness);
+
+                $('.quiz-question-item').each(function (index) {
+                    var isCorrect = correctness[questions[index]];
+                    $(this).removeClass('bg-success bg-danger');
+                    $(this).addClass(isCorrect ? 'bg-success' : 'bg-danger');
+                });
+
+                var resultsBody = $('#resultsBody');
+                resultsBody.empty();
+
+                var allCorrect = Object.values(correctness).every(value => value);
+                if (allCorrect) {
+                    resultsBody.append('<p class="text-success">Congratulations! You got all matches correct.</p>');
+                } else {
+                    var incorrectCount = Object.values(correctness).filter(value => !value).length;
+                    resultsBody.append('<p class="text-danger">You got ' + incorrectCount + ' match(es) wrong.</p>');
+                }
+
+                resultsBody.append('<p class="text-info">Time taken: ' + Math.floor(elapsedTime / 1000) + ' seconds</p>');
+
+                $('#completePopup').modal('show');
+            }
+
+            $('#completePopup').on('hidden.bs.modal', resetGame);
+        </script>
+    }
+</div>
