@@ -6,9 +6,54 @@
 
 @for (int i = 0; i < Model.Nodes.Count; i++)
 {
-    <div style="border: 1px solid #000; padding: 10px; margin: 5px; display: inline-block;">
+    <div 
+        class="answer-option"
+        data-answer="@Model.Nodes[i].child[0]" style="border: 1px solid #000; padding: 10px; margin: 5px; display: inline-block;">
         @Model.Nodes[i].child[0].data
     </div>
 }
 
-     
+<!-- Modal HTML -->
+<div id="incorrectModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Incorrect</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Try again?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="resetPage()">Try Again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get all elements with the class "answer-option"
+            var answerOptions = document.querySelectorAll(".answer-option");
+
+            // Define a function to handle the click event
+            function handleClick(event) {
+                // Display the modal
+                var incorrectModal = new bootstrap.Modal(document.getElementById('incorrectModal'));
+                incorrectModal.show();
+            }
+
+            // Add click event listener to each answer option
+            answerOptions.forEach(function(answerOption) {
+                answerOption.addEventListener("click", handleClick);
+            });
+
+            // Function to reset the page
+            window.resetPage = function() {
+                location.reload();
+            };
+        });
+    </script>
+}

@@ -4,9 +4,12 @@
     ViewData["Title"] = "HardMode";
 }
 
+<!-- Display countdown timer -->
 <p id="countdowntimer"></p>
 
+<!-- Container for sortable list of books -->
 <div id="sortable-list" class="list-group list-group-horizontal justify-content-center">
+    <!-- Loop through each book in the model -->
     @foreach (var item in Model)
     {
         <div 
@@ -15,9 +18,11 @@
             data-call-number="@item.CallNumber"
             data-author="@item.Author"
         >
+            <!-- Container for book image and text overlay -->
             <div class="image-container">
                 <img src="~/images/book.png" />
                 <div class="text-overlay">
+                    <!-- Display book author and call number -->
                     <p>@item.Author</p>
                     <p>@item.CallNumber</p>
                 </div>
@@ -26,15 +31,17 @@
     }
 </div>
 
+<!-- Section for scripts -->
 @section scripts {
+    <!-- JavaScript countdown timer -->
     <script>
         var complete = false;
 
         // Set the date we're counting down to
-        var countDownDate = new Date().getTime()+27000;
+        var countDownDate = new Date().getTime() + 27000;
 
         // Update the count down every 1 second
-        var x = setInterval(function() {
+        var x = setInterval(function () {
 
             // Get today's date and time
             var now = new Date().getTime();
@@ -45,7 +52,7 @@
             // Time calculations for seconds
             var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Display the result in the element with id="demo"
+            // Display the result in the element with id="countdowntimer"
             document.getElementById("countdowntimer").innerHTML = seconds + " seconds";
 
             // If the count down is finished, write some text
@@ -59,6 +66,7 @@
             }
         }, 1000);
 
+        // jQuery sortable functionality
         $(function () {
             $("#sortable-list").sortable({
                 tolerance: 'pointer',
@@ -66,13 +74,16 @@
                 stop: function (event, ui) {
                     var booksArray = [];
 
+                    // Loop through each book item
                     $('.book-item').each(function () {
                         var callNumberData = $(this).data('call-number');
 
+                        // Replace comma with a period if present in the call number data
                         if (callNumberData.includes(',')) {
                             callNumberData = callNumberData.replace(',', '.');
                         }
 
+                        // Create a book data object
                         var bookData = {
                             Id: parseInt($(this).data('id')),
                             Author: $(this).data('author'),
@@ -81,10 +92,11 @@
                         booksArray.push(bookData);
                     });
 
+                    // Convert the array to JSON
                     var jsonData = JSON.stringify(booksArray);
 
+                    // If there are books in the array, send an AJAX request
                     if (booksArray.length > 0) {
-                        
                         $.ajax({
                             url: '/ReplacingBooks/CheckOrder',
                             type: 'POST',
@@ -102,6 +114,7 @@
                 }
             });
 
+            // Disable selection of list items
             $("#sortable-list").disableSelection();
         });
     </script>

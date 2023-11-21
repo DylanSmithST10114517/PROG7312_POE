@@ -1,7 +1,9 @@
 ﻿namespace DeweyDecimal.Models
 {
+    // Represents a quiz with questions and answers related to Dewey Decimal categories
     public class Quiz
     {
+        // Dictionary mapping between call numbers and categories
         public readonly Dictionary<string, string> CallNumberCategory = new()
         {
             {"000-099", "General Works"},
@@ -15,6 +17,8 @@
             {"800-899", "Literature and Rhetoric"},
             {"900-999", "History, Biography, and Geography"},
         };
+
+        // Dictionary mapping between categories and call numbers
         public readonly Dictionary<string, string> CategoryCallNumber = new()
         {
             {"General Works", "000-099"},
@@ -29,12 +33,19 @@
             {"History, Biography, and Geography", "900-999"},
         };
 
+        // List to store quiz questions
         public List<string> Questions { get; set; } = new List<string>();
+
+        // List to store quiz answers
         public List<string> Answers { get; set; } = new List<string>();
 
+        // Constructor to create a quiz with randomized questions and answers based on the provided flag
         public Quiz(bool callToCat)
         {
+            // Determine the answer dictionary based on the flag
             Dictionary<string, string> answerDict = callToCat ? CallNumberCategory : CategoryCallNumber;
+
+            // Create lists from the keys and values of the answer dictionary
             List<string> keyList = new List<string>(answerDict.Keys);
             List<string> answerList = new List<string>(answerDict.Values);
 
@@ -62,21 +73,25 @@
                 }
             }
 
+            // Shuffle the order of questions and answers
             ShuffleQuestions();
             ShuffleAnswers();
         }
 
+        // Parameterless constructor
         public Quiz()
         {
-
+            // Empty constructor
         }
 
+        // Private method to shuffle the order of questions
         private void ShuffleQuestions()
         {
             Random rand = new Random();
             Questions = Questions.OrderBy(a => rand.Next()).ToList();
         }
 
+        // Private method to shuffle the order of answers
         private void ShuffleAnswers()
         {
             Random rand = new Random();

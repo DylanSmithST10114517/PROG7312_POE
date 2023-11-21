@@ -4,31 +4,47 @@ namespace DeweyDecimal.Models
 {
     public static class BaseTree
     {
+        // Property representing the root node of the tree
         public static Node Root { get; private set; }
+
+        // Private instance of Random class for random operations
         private static readonly Random random = new Random();
+
+        // Static constructor to initialize the default tree
         static BaseTree()
         {
             LoadDefaultTree();
-
         }
 
+        // Private method to load the default tree structure from a JSON file
         private static void LoadDefaultTree()
         {
+            // Read the JSON data from the file
             var text = File.ReadAllText("./Data/categories.json");
+
+            // Deserialize the JSON data into a dictionary
             var dict = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, List<string>>>>(text);
+
+            // Create the root node
             Root = newNode("root");
+
             int topLevelCount = 0;
             int secondLevelCount = 0;
+
+            // Traverse the dictionary and populate the tree structure
             foreach (var key in dict.Keys)
             {
                 Root.child.Add(newNode(key));
+
                 foreach (var secondKey in dict[key].Keys)
                 {
                     Root.child[topLevelCount].child.Add(newNode(secondKey));
+
                     foreach (string secondLevel in dict[key][secondKey])
                     {
                         Root.child[topLevelCount].child[secondLevelCount].child.Add(newNode(secondLevel));
                     }
+
                     secondLevelCount++;
                 }
 
@@ -38,14 +54,13 @@ namespace DeweyDecimal.Models
             }
         }
 
+        // Method to generate a list of random tree paths with a specified top-level count
         public static List<Node> GenerateRandomTreePaths(int topLevelCount)
         {
             List<Node> randomTree = new List<Node>();
 
             // Ensure topLevelCount is within the range of available top-level nodes
             topLevelCount = Math.Min(topLevelCount, Root.child.Count);
-
-            Random random = new Random();
 
             for (int i = 0; i < topLevelCount; i++)
             {
@@ -68,7 +83,7 @@ namespace DeweyDecimal.Models
             return randomTree;
         }
 
-
+        // Private method to create a new node with the specified data
         private static Node newNode(string data)
         {
             Node temp = new Node();

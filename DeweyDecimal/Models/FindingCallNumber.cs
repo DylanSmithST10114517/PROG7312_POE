@@ -1,22 +1,31 @@
 ﻿namespace DeweyDecimal.Models
 {
+    // Represents a structure for finding a Dewey Decimal call number based on a random path in a tree
     public class FindingCallNumber
     {
+        // List of nodes representing a random path in a tree
         public List<Node> Nodes { get; set; }
 
+        // The question node, representing the deepest leaf node in the random path
         public Node QuestionNode { get; set; }
 
+        // Constructor to generate a random tree path with a specified count
         public FindingCallNumber(int count)
         {
+            // Generate a random path with the specified count
             Nodes = BaseTree.GenerateRandomTreePaths(count);
+
+            // Get the deepest leaf node from the random path and set it as the question node
             QuestionNode = GetLeafNodeFromRandomNode();
         }
 
+        // Parameterless constructor
         public FindingCallNumber()
         {
-
+            // Empty constructor
         }
 
+        // Method to get the deepest leaf node from a random node in the tree
         public Node GetLeafNodeFromRandomNode()
         {
             if (Nodes == null || Nodes.Count == 0)
@@ -32,6 +41,7 @@
             return GetDeepestLeafNode(randomNode);
         }
 
+        // Recursive method to find the deepest leaf node in a tree starting from a given node
         private Node GetDeepestLeafNode(Node node)
         {
             // Base case: if the node is a leaf node, return it
