@@ -2,14 +2,14 @@
 {
     public class FindingCallNumber
     {
-        public List<Tree> RandomTreePaths { get; set; }  
+        public List<Node> Nodes { get; set; }
 
         public Node QuestionNode { get; set; }
 
         public FindingCallNumber(int count)
         {
-            RandomTreePaths = BaseTree.GetRandomTreePaths(count);
-            QuestionNode = GetLowestLevelNodeFromRandomTree();
+            Nodes = BaseTree.GenerateRandomTreePaths(count);
+            QuestionNode = GetLeafNodeFromRandomNode();
         }
 
         public FindingCallNumber()
@@ -17,46 +17,41 @@
 
         }
 
-        public Node GetLowestLevelNodeFromRandomTree()
+        public Node GetLeafNodeFromRandomNode()
         {
-            if (RandomTreePaths == null || RandomTreePaths.Count == 0)
+            if (Nodes == null || Nodes.Count == 0)
             {
-                // Handle the case where there are no random trees
+                // Handle the case where Nodes is not initialized or is empty
                 return null;
             }
 
-            // Choose a random tree index
-            int randomTreeIndex = new Random().Next(0, RandomTreePaths.Count);
-            Tree randomTree = RandomTreePaths[randomTreeIndex];
+            Random random = new Random();
+            int randomIndex = random.Next(0, Nodes.Count);
 
-            // Get the lowest-level node from the random tree
-            Node lowestLevelNode = GetLowestLevelNode(randomTree.Root);
-
-            return lowestLevelNode;
+            Node randomNode = Nodes[randomIndex];
+            return GetDeepestLeafNode(randomNode);
         }
 
-        private Node GetLowestLevelNode(Node currentNode)
+        private Node GetDeepestLeafNode(Node node)
         {
-            if (currentNode == null || currentNode.child.Count == 0)
+            // Base case: if the node is a leaf node, return it
+            if (node.child == null || node.child.Count == 0)
             {
-                // If the current node is null or has no children, it is the lowest-level node
-                return currentNode;
+                return node;
             }
 
-            // Recursively find the lowest-level node among the children
-            Node lowestLevelNode = null;
-            foreach (var childNode in currentNode.child)
+            // Recursive case: find the deepest leaf node among the children
+            Node deepestLeaf = null;
+            foreach (var childNode in node.child)
             {
-                Node childLowestLevelNode = GetLowestLevelNode(childNode);
-                if (childLowestLevelNode != null && (lowestLevelNode == null || childLowestLevelNode.child.Count < lowestLevelNode.child.Count))
+                Node childLeaf = GetDeepestLeafNode(childNode);
+                if (deepestLeaf == null || (childLeaf != null && childLeaf.child.Count == 0))
                 {
-                    lowestLevelNode = childLowestLevelNode;
+                    deepestLeaf = childLeaf;
                 }
             }
 
-            return lowestLevelNode;
+            return deepestLeaf;
         }
     }
 }
-
-

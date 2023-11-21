@@ -4,21 +4,12 @@ namespace DeweyDecimal.Models
 {
     public static class BaseTree
     {
-        private static bool isInitialized = false;
-
-        public static void Initialize()
-        {
-            if (!isInitialized)
-            {
-                LoadDefaultTree();
-                isInitialized = true;
-            }
-        }
         public static Node Root { get; private set; }
-
+        private static readonly Random random = new Random();
         static BaseTree()
         {
             LoadDefaultTree();
+
         }
 
         private static void LoadDefaultTree()
@@ -40,54 +31,41 @@ namespace DeweyDecimal.Models
                     }
                     secondLevelCount++;
                 }
+
+                // Reset the secondLevelCount for each top-level iteration
                 secondLevelCount = 0;
                 topLevelCount++;
             }
         }
 
-        private static int GenerateRandomNumber(int min, int max, HashSet<int> exclusions)
+        public static List<Node> GenerateRandomTreePaths(int topLevelCount)
         {
-            var exclude = exclusions;
-            var range = Enumerable.Range(min, max).Where(i => !exclude.Contains(i));
+            List<Node> randomTree = new List<Node>();
 
-            var rand = new Random();
-            int index = rand.Next(min, max - exclude.Count);
-            return range.ElementAt(index);
-        }
+            // Ensure topLevelCount is within the range of available top-level nodes
+            topLevelCount = Math.Min(topLevelCount, Root.child.Count);
 
-        public static List<Tree> GetRandomTreePaths(int count)
-        {
-            int min = 0;
-            int max = BaseTree.Root.child.Count;
+            Random random = new Random();
 
-            HashSet<int> exclusions = new HashSet<int>();
-            List<Tree> randomTrees = new List<Tree>();
-
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < topLevelCount; i++)
             {
-                Node newRoot = new Node { data = "Root" }; // Create a new root for each tree
+                Node topLevelNode = Root.child[i];
 
-                for (int level = 0; level < max; level++)
+                // Ensure the top-level node has at least one child
+                if (topLevelNode.child.Count > 0)
                 {
-                    int randomNum = GenerateRandomNumber(min, max, exclusions);
-                    Node selectedNode = BaseTree.Root.child[randomNum];
+                    Node randomChild = topLevelNode.child[random.Next(topLevelNode.child.Count)];
+                    Node randomGrandchild = randomChild.child.Count > 0 ? randomChild.child[random.Next(randomChild.child.Count)] : null;
 
-                    // Copy the selected node and add it as a child to the new root
-                    newRoot.child.Add(new Node
-                    {
-                        data = selectedNode.data,
-                        child = new List<Node>() // Only one child at each level
-                    });
+                    // Create a new node pointing to a random grandchild, or null if there are no grandchild nodes
+                    Node newNode = new Node { data = $"RandomNode-{i}" };
+                    newNode.child.Add(randomGrandchild);
 
-                    exclusions.Add(randomNum);
+                    randomTree.Add(newNode);
                 }
-
-                // Create a new tree with the new root
-                Tree newTree = new Tree(newRoot);
-                randomTrees.Add(newTree);
             }
 
-            return randomTrees;
+            return randomTree;
         }
 
 
